@@ -1,0 +1,29 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;nazarginx&gt;">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../src/gopkg.in" />
+      <root url="file://$PROJECT_DIR$/../src/github.com" />
+      <root url="file://$PROJECT_DIR$/../src/rsc.io" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <excluded>
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/debug/dwarf/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/github.com/spf13/cobra/.git" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/sys/.git" />
+      <root url="file://$PROJECT_DIR$/../src/rsc.io/x86/.git" />
+      <root url="file://$PROJECT_DIR$/../src/github.com/derekparker/delve/.git" />
+      <root url="file://$PROJECT_DIR$/../src/github.com/derekparker/delve/dwarf/frame/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/github.com/derekparker/delve/_fixtures" />
+      <root url="file://$PROJECT_DIR$/../src/github.com/spf13/pflag/.git" />
+      <root url="file://$PROJECT_DIR$/../src/rsc.io/x86/x86asm/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/debug/.git" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/debug/macho/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/gopkg.in/yaml.v2/.git" />
+      <root url="file://$PROJECT_DIR$/../src/github.com/peterh/liner/.git" />
+      <root url="file://$PROJECT_DIR$" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/debug/elf/testdata" />
+    </excluded>
+  </library>
+</component>
