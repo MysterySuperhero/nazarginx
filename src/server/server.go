@@ -29,23 +29,38 @@ func (server *Server) init()  {
 	fmt.Println("Server variables have been inited.")
 }
 
-func parseRequest(conn net.Conn) (request utils.Request, err error)  {
-	return request, err
+
+// func which returns parsed request into utils.Request
+func handleRequest(conn net.Conn) (*utils.Request)  {
+	buffer := make([]byte, 2048)
+
+	_, read_err := conn.Read(buffer)
+	if read_err != nil {
+		fmt.Println(read_err)
+		return nil
+	}
+
+	fmt.Println("Request:")
+	fmt.Println(string(buffer))
+
+	return utils.ParseRequest(string(buffer))
 }
+
 
 func makeResponse() utils.Response {
 	response := new(utils.Response)
 	return *response
 }
 
+
 func serveConnection(conn net.Conn) {
 	defer conn.Close()
 	fmt.Println("Connected on " + conn.RemoteAddr().String())
 
 
-	_, err := parseRequest(conn)
+	request := handleRequest(conn)
 
-	if err != nil {
+	if request == nil {
 		return
 	}
 

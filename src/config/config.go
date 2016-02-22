@@ -1,6 +1,6 @@
 package config
 
 const (
-	Port = "14888"
-	Host = "127.1.0.1"
+	Port = "8080"
+	Host = "127.0.0.1"
 )
