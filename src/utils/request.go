@@ -5,24 +5,24 @@ import (
 )
 
 type Request struct {
-	method  	string
-	path    	string
-	protocol   	string
-	body    	string
-	headers 	Headers
+	Method   string
+	Path     string
+	Protocol string
+	Body     string
+	Headers  Headers
 }
 
-func (r *Request) getMethodPathAndProtocol(field string)  {
+func (r *Request) getGeneral(field string)  {
 	field_strings := strings.Split(field, " ")
-	r.method = field_strings[0]
-	r.path = field_strings[1]
-	r.protocol = field_strings[2]
+	r.Method = field_strings[0]
+	r.Path = field_strings[1]
+	r.Protocol = field_strings[2]
 }
 
 func parseHeaders(fields []string) (Headers) {
 	headers := Headers{}
 	for _, el := range fields {
-		header := strings.Split(el, separators["header"])
+		header := strings.Split(el, Separators["header"])
 		if len(header) == 2 {
 			headers.Add(header[0], header[1])
 		}
@@ -34,11 +34,11 @@ func parseHeaders(fields []string) (Headers) {
 func ParseRequest(req string) (*Request) {
 	request := new(Request)
 
-	request_strings := strings.Split(req, separators["field"])
+	request_strings := strings.Split(req, Separators["field"])
 
-	request.getMethodPathAndProtocol(request_strings[0])
+	request.getGeneral(request_strings[0])
 
-	request.headers = parseHeaders(request_strings[1:])
+	request.Headers = parseHeaders(request_strings[1:])
 
 	return request
 }

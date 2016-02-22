@@ -16,10 +16,12 @@ type Server struct {
 	num_cpus 	int
 	full_address	*net.TCPAddr
 	listener 	*net.TCPListener
+	document_root 	string
 }
 
 func (server *Server) init()  {
-	flag.IntVar(&server.num_cpus, "cpus", runtime.NumCPU(), "")
+	flag.IntVar(&server.num_cpus, "c", runtime.NumCPU(), "")
+	flag.StringVar(&server.document_root, "r", "../httptest", "")
 	flag.Parse()
 	runtime.GOMAXPROCS(server.num_cpus)
 	fmt.Println("Running on " + strconv.Itoa(server.num_cpus) + " CPUs")
@@ -29,9 +31,8 @@ func (server *Server) init()  {
 	fmt.Println("Server variables have been inited.")
 }
 
-
 // func which returns parsed request into utils.Request
-func handleRequest(conn net.Conn) (*utils.Request)  {
+func (server *Server) handleRequest(conn net.Conn) (*utils.Request)  {
 	buffer := make([]byte, 2048)
 
 	_, read_err := conn.Read(buffer)
@@ -46,26 +47,20 @@ func handleRequest(conn net.Conn) (*utils.Request)  {
 	return utils.ParseRequest(string(buffer))
 }
 
-
-func makeResponse() utils.Response {
-	response := new(utils.Response)
-	return *response
-}
-
-
-func serveConnection(conn net.Conn) {
+func (server *Server) serveConnection(conn net.Conn) {
 	defer conn.Close()
 	fmt.Println("Connected on " + conn.RemoteAddr().String())
 
 
-	request := handleRequest(conn)
+	request := server.handleRequest(conn)
 
 	if request == nil {
 		return
 	}
 
-	_ = makeResponse()
-	//conn.Write()
+	response := new(utils.Response)
+	response.CreateResponse(request.Method, request.Path, server.document_root)
+	conn.Write(response.Byte())
 }
 
 func (server *Server) Run() {
@@ -84,7 +79,7 @@ func (server *Server) Run() {
 		}
 
 		if conn != nil {
-			go serveConnection(conn)
+			go server.serveConnection(conn)
 		}
 	}
 
