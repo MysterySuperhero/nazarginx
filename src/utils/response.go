@@ -31,7 +31,7 @@ func exists(path string) (bool, error) {
 }
 
 func isFolder(path string) (bool) {
-	if _, err := regexp.MatchString(".*/", path); err == nil {
+	if res, _ := regexp.MatchString(".*/$", path); res {
 		return true
 	}
 	return false
