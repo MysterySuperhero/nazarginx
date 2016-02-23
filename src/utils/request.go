@@ -2,6 +2,7 @@ package utils
 
 import (
 	"strings"
+	"net/url"
 )
 
 type Request struct {
@@ -15,7 +16,8 @@ type Request struct {
 func (r *Request) getGeneral(field string)  {
 	field_strings := strings.Split(field, " ")
 	r.Method = field_strings[0]
-	r.Path = field_strings[1]
+	uri := strings.Split(field_strings[1], "?")
+	r.Path, _ = url.QueryUnescape(uri[0])
 	r.Protocol = field_strings[2]
 }
 

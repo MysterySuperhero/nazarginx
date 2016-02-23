@@ -1,14 +1,12 @@
 package utils
 
 import (
-	"path/filepath"
 	"fmt"
 	"os"
 	"regexp"
 	"io/ioutil"
 	"time"
 	"strconv"
-	"strings"
 	"bytes"
 )
 
@@ -23,7 +21,7 @@ const (
 	DEFAULT_FILE = "index.html"
 )
 
-func exists(path string) (bool, error) {
+func checkExistence(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil { return true, nil }
 	if os.IsNotExist(err) { return false, nil }
@@ -37,7 +35,7 @@ func isFolder(path string) (bool) {
 	return false
 }
 
-func (response *Response) setGeneral(method string, path *string, doc_root string) {
+func (response *Response) setGeneral(method string, path *string) {
 	folder := false
 	if isFolder(*path) {
 		fmt.Println("It's a folder!")
@@ -66,26 +64,31 @@ func (response *Response) setGeneral(method string, path *string, doc_root strin
 		fmt.Println("Adding file to body...")
 		response.body = file
 	}
+	response.setSuccessHeaders(*path)
 	response.status = OK
 }
 
 func contentTypeFromPath(path string) string  {
-	return Content_Types[strings.Trim(path, ".")]
+	re := regexp.MustCompile(".*\\.")
+	return Content_Types[re.Split(path, -1)[1]]
 }
 
-func (response *Response) setHeaders(path string)  {
+func (response *Response) setDefault()  {
 	response.headers = Headers{}
 	fmt.Println("Setting headers:")
 	fmt.Println("Date" + time.Now().String())
 	response.headers.Add("Date", time.Now().String())
 	fmt.Println("Server" + "nazarginx v0.1")
 	response.headers.Add("Server", "nazarginx v0.1")
+	fmt.Println("Connection" + "close")
+	response.headers.Add("Connection", "close")
+}
+
+func (response *Response) setSuccessHeaders(path string)  {
 	fmt.Println("Content-Length" + strconv.Itoa(len(response.body)))
 	response.headers.Add("Content-Length", strconv.Itoa(len(response.body)))
 	fmt.Println("Content-Type" + contentTypeFromPath(path))
 	response.headers.Add("Content-Type", contentTypeFromPath(path))
-	fmt.Println("Connection" + "close")
-	response.headers.Add("Connection", "close")
 }
 
 func (response *Response) Byte() []byte  {
@@ -99,24 +102,21 @@ func (response *Response) Byte() []byte  {
 }
 
 func (response *Response) CreateResponse(method string, path string, doc_root string) {
+	response.setDefault()
+	response.protocol = HttpProtocol
 
-	absPath, _ := filepath.Abs(".." + path)
-	fmt.Println("Trying to find at: " + absPath)
+	current_dir, _ := os.Getwd()
+	path = current_dir + path
+	fmt.Println("Trying to find at: " + path)
 
-	if _, err := exists(absPath); err == nil {
+	existence,err := checkExistence(path)
+	if existence &&  err == nil {
 		fmt.Println("WOW, file exists")
-
-		current_dir, _ := os.Getwd()
-		path = current_dir + path
-
-		fmt.Println("AZAZA " + path)
-		response.setGeneral(method, &path, doc_root)
-		response.setHeaders(absPath)
+		response.setGeneral(method, &path)
 	} else {
 		fmt.Println("OOOPS, file doesn't exists")
 		response.status = NotFound
 	}
 
-	response.protocol = HttpProtocol
 }
 
