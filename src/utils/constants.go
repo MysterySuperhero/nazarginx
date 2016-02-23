@@ -7,7 +7,7 @@ var (
 		"azaza": "\r\n\r\n",
 	}
 
-	 Content_Types = map[string]string{
+	 Content_Types = map[string]string {
 		 "css": "text/css",
 		 "gif": "image/gif",
 		 "html": "text/html",
@@ -19,13 +19,26 @@ var (
 		 "png": "image/png",
 		 "swf": "application/x-shockwave-flash",
 	}
+
+	Supported_Methods = map[string]bool {
+		"GET": true,
+		"HEAD": true,
+		"CONNECT": false,
+		"DELETE": false,
+		"OPTIONS": false,
+		"PATCH": false,
+		"POST": false,
+		"PUT": false,
+		"TRACE": false,
+	}
+
 )
 
 const (
 	OK = "200 OK"
 	Forbidden = "403 Forbidden"
 	NotFound = "404 Not Found"
-	MethodNotAllowed = "405 Method Not Allowed"
+	NotAllowed = "405 Method Not Allowed"
 	HttpProtocol = "HTTP/1.1"
 )
 

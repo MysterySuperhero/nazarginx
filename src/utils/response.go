@@ -105,6 +105,11 @@ func (response *Response) CreateResponse(method string, path string, doc_root st
 	response.setDefault()
 	response.protocol = HttpProtocol
 
+	if !Supported_Methods[method] {
+		response.status = NotAllowed
+		return
+	}
+
 	current_dir, _ := os.Getwd()
 	path = current_dir + path
 	fmt.Println("Trying to find at: " + path)
