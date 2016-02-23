@@ -8,6 +8,7 @@ import (
 	"time"
 	"strconv"
 	"bytes"
+	"strings"
 )
 
 type Response struct {
@@ -33,6 +34,16 @@ func isFolder(path string) (bool) {
 		return true
 	}
 	return false
+}
+
+
+// returns false if somebody want to fool you
+func checkPath(path string) bool  {
+	if !strings.Contains(path, "../") {
+		return true
+	} else {
+		return false
+	}
 }
 
 func (response *Response) setGeneral(method string, path *string) {
@@ -105,12 +116,14 @@ func (response *Response) CreateResponse(method string, path string, doc_root st
 	response.setDefault()
 	response.protocol = HttpProtocol
 
-	if (method == "HEAD") {
-		fmt.Println("OMG HEAD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-	}
-
 	if !Supported_Methods[method] {
 		response.status = NotAllowed
+		return
+	}
+
+	if !checkPath(path) {
+		fmt.Println("HAHA! POPALSYA ZHULIK")
+		response.status = Forbidden
 		return
 	}
 

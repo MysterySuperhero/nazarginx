@@ -41,6 +41,7 @@ func (server *Server) handleRequest(conn net.Conn) (*utils.Request)  {
 		return nil
 	}
 
+	fmt.Println("_________________________________________________________________________________________________")
 	fmt.Println("Request:")
 	fmt.Println(string(buffer))
 
