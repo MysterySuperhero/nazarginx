@@ -64,7 +64,7 @@ func (response *Response) setGeneral(method string, path *string) {
 		fmt.Println("Adding file to body...")
 		response.body = file
 	}
-	response.setSuccessHeaders(*path)
+	response.setSuccessHeaders(*path, file)
 	response.status = OK
 }
 
@@ -84,9 +84,9 @@ func (response *Response) setDefault()  {
 	response.headers.Add("Connection", "close")
 }
 
-func (response *Response) setSuccessHeaders(path string)  {
-	fmt.Println("Content-Length" + strconv.Itoa(len(response.body)))
-	response.headers.Add("Content-Length", strconv.Itoa(len(response.body)))
+func (response *Response) setSuccessHeaders(path string, file []byte)  {
+	fmt.Println("Content-Length" + strconv.Itoa(len(file)))
+	response.headers.Add("Content-Length", strconv.Itoa(len(file)))
 	fmt.Println("Content-Type" + contentTypeFromPath(path))
 	response.headers.Add("Content-Type", contentTypeFromPath(path))
 }
@@ -104,6 +104,10 @@ func (response *Response) Byte() []byte  {
 func (response *Response) CreateResponse(method string, path string, doc_root string) {
 	response.setDefault()
 	response.protocol = HttpProtocol
+
+	if (method == "HEAD") {
+		fmt.Println("OMG HEAD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	}
 
 	if !Supported_Methods[method] {
 		response.status = NotAllowed
