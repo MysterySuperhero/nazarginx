@@ -4,7 +4,6 @@ var (
 	Separators = map[string]string {
 		"header": ": ",
 		"field": "\r\n",
-		"azaza": "\r\n\r\n",
 	}
 
 	 Content_Types = map[string]string {

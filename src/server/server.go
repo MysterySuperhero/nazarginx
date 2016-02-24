@@ -25,8 +25,11 @@ func (server *Server) init()  {
 	flag.Parse()
 	runtime.GOMAXPROCS(server.num_cpus)
 	fmt.Println("Running on " + strconv.Itoa(server.num_cpus) + " CPUs")
+
 	server.host = config.Host
+
 	server.port = config.Port
+
 	server.full_address, _ = net.ResolveTCPAddr("tcp", server.host + ":" + server.port)
 	fmt.Println("Server variables have been inited.")
 }
@@ -53,14 +56,17 @@ func (server *Server) serveConnection(conn net.Conn) {
 	fmt.Println("Connected on " + conn.RemoteAddr().String())
 
 
+	// parse input request to Request{}
 	request := server.handleRequest(conn)
 
 	if request == nil {
 		return
 	}
 
+	// make a Response{}
 	response := new(utils.Response)
 	response.CreateResponse(request.Method, request.Path, server.document_root)
+	// give it back in []byte form
 	conn.Write(response.Byte())
 }
 

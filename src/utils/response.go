@@ -37,13 +37,30 @@ func isFolder(path string) (bool) {
 }
 
 
-// returns false if somebody want to fool you
+// returns false if somebody wants to fool you
 func checkPath(path string) bool  {
 	if !strings.Contains(path, "../") {
 		return true
 	} else {
 		return false
 	}
+}
+
+func contentTypeFromPath(path string) string  {
+	re := regexp.MustCompile(".*\\.")
+	return Content_Types[re.Split(path, -1)[1]]
+}
+
+func (response *Response) setDefault()  {
+	response.protocol = HttpProtocol
+	response.headers = Headers{}
+	fmt.Println("Setting headers:")
+	fmt.Println("Date" + time.Now().String())
+	response.headers.Add("Date", time.Now().String())
+	fmt.Println("Server" + "nazarginx v0.1")
+	response.headers.Add("Server", "nazarginx v0.1")
+	fmt.Println("Connection" + "close")
+	response.headers.Add("Connection", "close")
 }
 
 func (response *Response) setGeneral(method string, path *string) {
@@ -79,22 +96,6 @@ func (response *Response) setGeneral(method string, path *string) {
 	response.status = OK
 }
 
-func contentTypeFromPath(path string) string  {
-	re := regexp.MustCompile(".*\\.")
-	return Content_Types[re.Split(path, -1)[1]]
-}
-
-func (response *Response) setDefault()  {
-	response.headers = Headers{}
-	fmt.Println("Setting headers:")
-	fmt.Println("Date" + time.Now().String())
-	response.headers.Add("Date", time.Now().String())
-	fmt.Println("Server" + "nazarginx v0.1")
-	response.headers.Add("Server", "nazarginx v0.1")
-	fmt.Println("Connection" + "close")
-	response.headers.Add("Connection", "close")
-}
-
 func (response *Response) setSuccessHeaders(path string, file []byte)  {
 	fmt.Println("Content-Length" + strconv.Itoa(len(file)))
 	response.headers.Add("Content-Length", strconv.Itoa(len(file)))
@@ -114,7 +115,6 @@ func (response *Response) Byte() []byte  {
 
 func (response *Response) CreateResponse(method string, path string, doc_root string) {
 	response.setDefault()
-	response.protocol = HttpProtocol
 
 	if !Supported_Methods[method] {
 		response.status = NotAllowed
