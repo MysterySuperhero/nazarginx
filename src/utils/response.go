@@ -54,21 +54,15 @@ func contentTypeFromPath(path string) string  {
 func (response *Response) setDefault()  {
 	response.protocol = HttpProtocol
 	response.headers = Headers{}
-	fmt.Println("Setting headers:")
-	fmt.Println("Date" + time.Now().String())
 	response.headers.Add("Date", time.Now().String())
-	fmt.Println("Server" + "nazarginx v0.1")
 	response.headers.Add("Server", "nazarginx v0.1")
-	fmt.Println("Connection" + "close")
 	response.headers.Add("Connection", "close")
 }
 
 func (response *Response) setGeneral(method string, path *string) {
 	folder := false
 	if isFolder(*path) {
-		fmt.Println("It's a folder!")
 		*path += DEFAULT_FILE
-		fmt.Println("So, I'll give you: " + *path)
 		folder = true
 	}
 
@@ -78,10 +72,8 @@ func (response *Response) setGeneral(method string, path *string) {
 		fmt.Println(err)
 		if os.IsNotExist(err) {
 			if folder {
-				fmt.Println("Forbidden!")
 				response.status = Forbidden
 			} else {
-				fmt.Println("File not found!")
 				response.status = NotFound
 			}
 		}
@@ -89,7 +81,6 @@ func (response *Response) setGeneral(method string, path *string) {
 	}
 
 	if method == "GET" {
-		fmt.Println("Adding file to body...")
 		response.body = file
 	}
 	response.setSuccessHeaders(*path, file)
@@ -97,9 +88,7 @@ func (response *Response) setGeneral(method string, path *string) {
 }
 
 func (response *Response) setSuccessHeaders(path string, file []byte)  {
-	fmt.Println("Content-Length" + strconv.Itoa(len(file)))
 	response.headers.Add("Content-Length", strconv.Itoa(len(file)))
-	fmt.Println("Content-Type" + contentTypeFromPath(path))
 	response.headers.Add("Content-Type", contentTypeFromPath(path))
 }
 
@@ -122,21 +111,17 @@ func (response *Response) CreateResponse(method string, path string, doc_root st
 	}
 
 	if !checkPath(path) {
-		fmt.Println("HAHA! POPALSYA ZHULIK")
 		response.status = Forbidden
 		return
 	}
 
 	current_dir, _ := os.Getwd()
 	path = current_dir + path
-	fmt.Println("Trying to find at: " + path)
 
 	existence,err := checkExistence(path)
 	if existence &&  err == nil {
-		fmt.Println("WOW, file exists")
 		response.setGeneral(method, &path)
 	} else {
-		fmt.Println("OOOPS, file doesn't exists")
 		response.status = NotFound
 	}
 
