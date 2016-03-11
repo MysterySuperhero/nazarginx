@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"utils"
 	"strconv"
+	"errors"
 )
 
 type Server struct {
@@ -25,6 +26,7 @@ func (server *Server) init()  {
 	flag.IntVar(&server.num_cpus, "c", runtime.NumCPU(), "")
 	flag.StringVar(&server.document_root, "r", "../httptest", "")
 	flag.Parse()
+
 	runtime.GOMAXPROCS(server.num_cpus)
 	utils.LogInfo("Running on " + strconv.Itoa(server.num_cpus) + " CPUs")
 
@@ -36,16 +38,22 @@ func (server *Server) init()  {
 }
 
 // func which returns parsed request into utils.Request
-func (server *Server) handleRequest(conn net.Conn) (*utils.Request)  {
+func (server *Server) handleRequest(conn net.Conn) (*utils.Request, error)  {
 	buffer := make([]byte, 2048)
 
 	_, read_err := conn.Read(buffer)
 	if read_err != nil {
 		fmt.Println(read_err)
-		return nil
+		return nil, errors.New("Bad request")
 	}
 
-	return utils.ParseRequest(string(buffer))
+	parsed_request, err := utils.ParseRequest(string(buffer))
+
+	if err != nil {
+		return nil, err
+	}
+
+	return parsed_request, nil
 }
 
 func (server *Server) serveConnection(conn net.Conn) {
@@ -54,9 +62,12 @@ func (server *Server) serveConnection(conn net.Conn) {
 	utils.LogError("New connection from " + conn.RemoteAddr().String())
 
 	// parse input request to Request{}
-	request := server.handleRequest(conn)
+	request, err := server.handleRequest(conn)
 
-	if request == nil {
+	if err != nil {
+		response := new(utils.Response)
+		response.CreateResponseForBadRequest()
+		conn.Write(response.Byte())
 		return
 	}
 

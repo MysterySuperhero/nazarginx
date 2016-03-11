@@ -3,6 +3,7 @@ package utils
 import (
 	"strings"
 	"net/url"
+	"errors"
 )
 
 type Request struct {
@@ -13,12 +14,17 @@ type Request struct {
 	Headers  Headers
 }
 
-func (r *Request) getGeneral(field string)  {
+func (r *Request) getGeneral(field string) (error) {
 	field_strings := strings.Split(field, " ")
-	r.Method = field_strings[0]
-	uri := strings.Split(field_strings[1], "?")
-	r.Path, _ = url.QueryUnescape(uri[0])
-	r.Protocol = field_strings[2]
+	if (len(field_strings) >= 3) {
+		r.Method = field_strings[0]
+		uri := strings.Split(field_strings[1], "?")
+		r.Path, _ = url.QueryUnescape(uri[0])
+		r.Protocol = field_strings[2]
+		return nil
+	} else {
+		return errors.New("Bad request")
+	}
 }
 
 func parseHeaders(fields []string) (Headers) {
@@ -33,14 +39,18 @@ func parseHeaders(fields []string) (Headers) {
 	return headers
 }
 
-func ParseRequest(req string) (*Request) {
+func ParseRequest(req string) (*Request, error) {
 	request := new(Request)
 
 	request_strings := strings.Split(req, Separators["field"])
 
-	request.getGeneral(request_strings[0])
+	err := request.getGeneral(request_strings[0])
+
+	if err != nil {
+		return nil, err
+	}
 
 	request.Headers = parseHeaders(request_strings[1:])
 
-	return request
+	return request, nil
 }

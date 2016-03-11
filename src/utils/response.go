@@ -127,3 +127,8 @@ func (response *Response) CreateResponse(method string, path string, doc_root st
 
 }
 
+func (response *Response) CreateResponseForBadRequest() {
+	response.setDefault()
+	response.status = Forbidden
+}
+
